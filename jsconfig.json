@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+      "baseUrl": ".",
+      "target": "ESNext",
+      "module": "ES6",
+      "noEmit": true,
+      "lib": [
+          "DOM",
+          "ES2020"
+        ],
+    },
+    //Add any build/compiled folders here to stop vscode searching those
+    "exclude": ["dist"],
+    "include": ["./index.js", "node_modules/*"]
+  }

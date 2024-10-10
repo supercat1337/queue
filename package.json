@@ -1,0 +1,34 @@
+{
+  "name": "@supercat1337/queue",
+  "version": "1.0.0",
+  "description": "Queue is a class that manages the tasks in the queue. It emits events when tasks are added or removed.",
+  "main": "index.js",
+  "scripts": {
+    "test": "c8 ava",
+    "build": "npm run remove_type_files && npm run build_esm && npm run build_esm_min && npm run create_types",
+    "build_esm": "rollup ./src/index.js --file ./dist/queue.esm.js --format es",
+    "build_esm_min": "esbuild --minify --bundle --platform=neutral --legal-comments=none ./src/index.js --outfile=./dist/queue.esm.min.js",
+    "create_types": "npx -p typescript tsc --project my.tsconfig.types.json",
+    "remove_type_files": "del /q *.d.ts *.d.ts.map && cd dist && del /s /q *.d.ts *.d.ts.map && cd ../src && del /s /q *.d.ts *.d.ts.map && cd .."
+  },
+  "author": "Supercat",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.12.2",
+    "ava": "^6.1.2",
+    "c8": "^9.1.0",
+    "esbuild": "^0.20.2"
+  },
+  "type": "module",
+  "moduleResolution": "nodenext",
+  "keywords": [
+    "queue", "task", "task queue"
+  ],
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
+  },
+  "homepage": "https://github.com/supercat1337/queue",
+  "dependencies": {
+    "@supercat1337/event-emitter": "^1.0.6"
+  }
+}
