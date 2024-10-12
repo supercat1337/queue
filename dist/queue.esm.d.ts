@@ -22,23 +22,30 @@ export class Queue {
      */
     remove(task_id: number): void;
     /**
+     * Add a task to the queue and run it. If the task resolves, it is removed from the queue. If the task rejects, the error is logged to the console and the task is removed from the queue.
+     * @template {Function} T
+     * @param {T} task - the task to be added and run
+     * @returns {Promise<null|ReturnType<task>>} - the result of the task
+     */
+    addTaskAndRun<T extends Function>(task: T): Promise<null | ReturnType<T>>;
+    /**
      * The number of tasks in the queue
      * @type {number}
      * @readonly
      */
     readonly get size(): number;
     /**
-     * Wait until the number of task id's in the queue is less than queue_limit
-     * @param {number} queue_limit sets the limit of the number of tasks in the queue
-     * @param {number} [wait_time=50] sets the time to wait until the number of tasks in the queue is less than queue_limit
+     * Wait until the number of task id's in the queue is less than limit
+     * @param {number} limit - sets the limit of the number of tasks in the queue
+     * @param {number} [wait_time=50] - sets the time to wait until the number of tasks in the queue is less than limit
      * @returns {Promise<void>}
      */
-    waitForQueueLimitIsFree(queue_limit: number, wait_time?: number): Promise<void>;
+    waitForLessThan(limit: number, wait_time?: number): Promise<void>;
     /**
      * Wait until all tasks are completed
      * @returns {Promise<void>}
      */
-    waitForCompleteAll(): Promise<void>;
+    waitUntilEmpty(): Promise<void>;
     #private;
 }
 //# sourceMappingURL=queue.esm.d.ts.map

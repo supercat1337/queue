@@ -1,6 +1,6 @@
 {
   "name": "@supercat1337/queue",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Queue is a class that manages the tasks in the queue. It emits events when tasks are added or removed.",
   "main": "index.js",
   "scripts": {

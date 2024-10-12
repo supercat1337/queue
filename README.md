@@ -45,23 +45,29 @@ Remove tasks from the queue using the `remove` method:
 ```javascript
 queue.remove(taskId);
 ```
-### Waiting for Tasks to Complete
 
-Wait for tasks to complete using the `waitForQueueLimitIsFree` method:
+### Get the Number of Tasks in the Queue
 ```javascript
-await queue.waitForQueueLimitIsFree(10);
+queue.size;
 ```
 
-Wait for all tasks to complete using the `waitForCompleteAll` method:
+### Waiting for Tasks to Complete
+
+Wait for tasks to complete using the `waitUntilEmpty` method:
 ```javascript
-await queue.waitForCompleteAll();
+await queue.waitUntilEmpty(10);
+```
+
+Wait for all tasks to complete using the `waitUntilEmpty` method:
+```javascript
+await queue.waitUntilEmpty();
 ```
 
 ### Event Listening
 
 Listen for events emitted by Queue using the `on` method:
 ```javascript
-queue.on('add', (data, taskId) => {
+queue.on('add', (taskId, data) => {
     console.log(`Task added: ${data} (ID: ${taskId})`);
 });
 
@@ -78,7 +84,6 @@ import { Queue } from "@supercat1337/queue"; // import Queue class
 /**
  * Simulate a task that takes 1 second to complete.
  * @param {string} data - the task data
- * @returns {Promise<void>}
  */
 async function task(data) { // define task function
     console.log(data); // log the task data
@@ -90,28 +95,20 @@ async function init() {
     const queue = new Queue(); // create Queue instance
     const tasks_limit = 3; // set the limit of tasks in the queue
 
-    queue.on("add", async (data, task_id) => { // subscribe to "add" event
-        console.log("add", data, task_id); // log the task data and task ID
-
-        await task(data); // run the task
-        queue.remove(task_id); // remove the task
-    });
-    
-    queue.on("remove", (task_id) => { // subscribe to "remove" event
-        console.log("remove", task_id); // log the task ID
-    });
-
     let counter = 0; // initialize counter
 
     while (counter < 10) { // loop until counter is 10
         counter++; // increment counter
-        queue.add("task " + counter); // add task to queue
+
+        queue.addTaskAndRun(async () => { // add task to queue and run it
+            return task("task " + counter); // run the task
+        });
+
         console.log("queue.size is " + queue.size); // log the size of the queue
-        await queue.waitForQueueLimitIsFree(tasks_limit); // wait until the number of tasks in the queue is less than tasks_limit
+        await queue.waitForLessThan(tasks_limit); // wait until the number of tasks in the queue is less than tasks_limit
     }
 
-    await queue.waitForCompleteAll(); // wait until all tasks are completed
-
+    await queue.waitUntilEmpty(); // wait until all tasks are completed
 }
 
 await init(); // call init function
@@ -123,11 +120,11 @@ await init(); // call init function
 ### Queue Class
 
 ### Methods
-
+*   `addTaskAndRun(task)`: Add a task to the queue and run it. If the task resolves, it is removed from the queue. If the task rejects, the error is logged to the console and the task is removed from the queue.
+*   `waitForLessThan(limit, wait_time=50)`: Wait until the number of tasks in the queue is less than the specified limit.
+*   `waitUntilEmpty()`: Wait until all tasks are completed.
 *   `add(...data)`: Add a task to the queue and return its task ID.
 *   `remove(taskId)`: Remove a task from the queue by its task ID.
-*   `waitForQueueLimitIsFree(queueLimit, waitTime = 50)`: Wait until the number of tasks in the queue is less than the specified limit.
-*   `waitForCompleteAll()`: Wait until all tasks are completed.
 *   `on(event, listener)`: Subscribe to events on the Queue instance.
 
 **License**

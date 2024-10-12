@@ -15,7 +15,7 @@ function sleep(ms) {
 Queue Methods:
  - add - add a task to the queue and return its task ID. This method emits an "add" event with the data and the task ID.
  - remove - remove a task from the queue. This method emits a "remove" event with the task ID.
- - waitForQueueLimitIsFree - wait until the number of task id's in the queue is less than queue_limit. 
+ - waitUntilEmpty - wait until the number of task id's in the queue is less than queue_limit. 
  - on - subscribe to events on the Queue. This method is a direct passthrough to the EventEmitter's on method. 
 
 Queue Properties:
@@ -44,8 +44,8 @@ async function init() {
     const queue = new Queue();
     const tasks_limit = 10;
 
-    queue.on("add", async (data, task_id) => {
-        console.log("add", data, task_id);
+    queue.on("add", async (task_id, data) => {
+        console.log("add", task_id, data);
 
         await task(data);
         queue.remove(task_id);
@@ -61,7 +61,7 @@ async function init() {
         counter++;
         queue.add("task " + counter);
         console.log("queue.size is " + queue.size);
-        await queue.waitForQueueLimitIsFree(tasks_limit);
+        await queue.waitUntilEmpty(tasks_limit);
     }
 
 }
@@ -113,10 +113,9 @@ class Queue {
 
         this.#data.add(task_id);
         this.#size++;
-        this.#eventEmitter.emit("add", data, task_id);
+        this.#eventEmitter.emit("add", task_id, data);
         return task_id;
     }
-
 
     /**
      * Remove a task from the queue by its task ID. This method emits a "remove" event with the task ID.
@@ -130,6 +129,27 @@ class Queue {
         this.#eventEmitter.emit("remove", task_id);
     }
 
+    /**
+     * Add a task to the queue and run it. If the task resolves, it is removed from the queue. If the task rejects, the error is logged to the console and the task is removed from the queue.
+     * @template {Function} T
+     * @param {T} task - the task to be added and run
+     * @returns {Promise<null|ReturnType<task>>} - the result of the task
+     */
+    async addTaskAndRun(task) {
+        const task_id = this.add(task);
+        let result = null;
+        try {
+            result = await task();
+        }
+        catch (e) {
+            console.error(e);
+        }
+        finally {
+            this.remove(task_id);
+        }
+
+        return result;
+    }
 
     /**
      * The number of tasks in the queue
@@ -140,14 +160,15 @@ class Queue {
         return this.#size;
     }
 
+
     /**
-     * Wait until the number of task id's in the queue is less than queue_limit
-     * @param {number} queue_limit sets the limit of the number of tasks in the queue
-     * @param {number} [wait_time=50] sets the time to wait until the number of tasks in the queue is less than queue_limit
+     * Wait until the number of task id's in the queue is less than limit
+     * @param {number} limit - sets the limit of the number of tasks in the queue
+     * @param {number} [wait_time=50] - sets the time to wait until the number of tasks in the queue is less than limit
      * @returns {Promise<void>}
      */
-    async waitForQueueLimitIsFree(queue_limit, wait_time = 50) {
-        while (this.size >= queue_limit) {
+    async waitForLessThan(limit, wait_time = 50) {
+        while (this.size >= limit) {
             await sleep(wait_time);
         }
     }
@@ -156,7 +177,7 @@ class Queue {
      * Wait until all tasks are completed
      * @returns {Promise<void>}
      */
-    async waitForCompleteAll() {
+    async waitUntilEmpty() {
         while (this.size > 0) {
             await sleep(50);
         }
