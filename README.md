@@ -18,65 +18,6 @@ Queue is a lightweight JavaScript class that provides a simple way to manage tas
 *   **Task Management**: Queue provides methods for adding, removing, and waiting for tasks to complete.
 
 **Usage**
------
-
-### Installation
-
-To use Queue, simply import the class into your JavaScript file:
-```javascript
-import { Queue } from "@supercat1337/queue";
-```
-### Creating a Queue Instance
-
-Create a new instance of the Queue class:
-```javascript
-const queue = new Queue();
-```
-### Adding Tasks
-
-Add tasks to the queue using the `add` method:
-```javascript
-let taskId = queue.add('task 1');
-let taskId2 = queue.add('task 2');
-```
-### Removing Tasks
-
-Remove tasks from the queue using the `remove` method:
-```javascript
-queue.remove(taskId);
-```
-
-### Get the Number of Tasks in the Queue
-```javascript
-queue.size;
-```
-
-### Waiting for Tasks to Complete
-
-Wait for tasks to complete using the `waitUntilEmpty` method:
-```javascript
-await queue.waitUntilEmpty(10);
-```
-
-Wait for all tasks to complete using the `waitUntilEmpty` method:
-```javascript
-await queue.waitUntilEmpty();
-```
-
-### Event Listening
-
-Listen for events emitted by Queue using the `on` method:
-```javascript
-queue.on('add', (taskId, data) => {
-    console.log(`Task added: ${data} (ID: ${taskId})`);
-});
-
-queue.on('remove', (taskId) => {
-    console.log(`Task removed: ${taskId}`);
-});
-```
-
-**Examples**
 ------------
 ```javascript
 import { Queue } from "@supercat1337/queue"; // import Queue class
@@ -126,6 +67,13 @@ await init(); // call init function
 *   `add(...data)`: Add a task to the queue and return its task ID.
 *   `remove(taskId)`: Remove a task from the queue by its task ID.
 *   `on(event, listener)`: Subscribe to events on the Queue instance.
+
+### Properties
+*   `size`: The number of tasks in the queue.   
+
+### Events
+*   `add`: Emitted when a task is added to the queue.
+*   `remove`: Emitted when a task is removed from the queue.
 
 **License**
 -------
