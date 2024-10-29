@@ -3,65 +3,6 @@ import { EventEmitter } from '@supercat1337/event-emitter';
 // @ts-check
 
 
-/*
-Queue Methods:
- - add - add a task to the queue and return its task ID. This method emits an "add" event with the data and the task ID.
- - remove - remove a task from the queue. This method emits a "remove" event with the task ID.
- - waitUntilEmpty - wait until the number of task id's in the queue is less than queue_limit. 
- - on - subscribe to events on the Queue. This method is a direct passthrough to the EventEmitter's on method. 
-
-Queue Properties:
- - size - the number of tasks in the queue
-
-Queue Events:
- - add - (data, task_id) - emitted when a new task is added to the queue. data is the data passed to the add method, and task_id is the task ID.
- - remove - (task_id) - emitted when a task is removed from the queue. task_id is the task ID.
-
-
-Example usage:
-
-import { Queue } from "./queue.js";
-
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-async function task(data) {
-    console.log(data);
-    await sleep(1000);
-}
-
-async function init() {
-    
-    const queue = new Queue();
-    const tasks_limit = 10;
-
-    queue.on("add", async (task_id, data) => {
-        console.log("add", task_id, data);
-
-        await task(data);
-        queue.remove(task_id);
-    });
-    
-    queue.on("remove", (task_id) => {
-        console.log("remove", task_id);
-    });
-
-    let counter = 0;
-
-    while (counter < 100) {
-        counter++;
-        queue.add("task " + counter);
-        console.log("queue.size is " + queue.size);
-        await queue.waitUntilEmpty(tasks_limit);
-    }
-
-}
-
-init();
-
- */
-
 /**
  * Queue class. This class is used to manage the tasks in the queue. 
  * It emits events when tasks are added or removed. 
