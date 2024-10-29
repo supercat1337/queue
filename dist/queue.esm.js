@@ -3,14 +3,6 @@ import { EventEmitter } from '@supercat1337/event-emitter';
 // @ts-check
 
 
-/**
- * @param {number} ms 
- * @returns 
- */
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 /*
 Queue Methods:
  - add - add a task to the queue and return its task ID. This method emits an "add" event with the data and the task ID.
@@ -89,7 +81,7 @@ class Queue {
     /**
      * EventEmitter to emit events on add/remove operations
      */
-    #eventEmitter = /** @type {EventEmitter<"add"|"remove">} */ (new EventEmitter);
+    #eventEmitter = /** @type {EventEmitter<"add"|"remove"|"empty"|"change">} */ (new EventEmitter);
 
     /**
      * Subscribe to events on the Queue. This method is a direct passthrough to the EventEmitter's on method.
@@ -127,6 +119,12 @@ class Queue {
         this.#data.delete(task_id);
         this.#size--;
         this.#eventEmitter.emit("remove", task_id);
+
+        this.#eventEmitter.emit("change");
+
+        if (this.#size === 0) {
+            this.#eventEmitter.emit("empty");
+        }
     }
 
     /**
@@ -164,23 +162,37 @@ class Queue {
     /**
      * Wait until the number of task id's in the queue is less than limit
      * @param {number} limit - sets the limit of the number of tasks in the queue
-     * @param {number} [wait_time=50] - sets the time to wait until the number of tasks in the queue is less than limit
      * @returns {Promise<void>}
      */
-    async waitForLessThan(limit, wait_time = 50) {
-        while (this.size >= limit) {
-            await sleep(wait_time);
+    waitForLessThan(limit) {
+
+        if (this.#size < limit) {
+            return Promise.resolve();
         }
+
+        return new Promise(resolve => {
+            const unsubscribe = this.#eventEmitter.on("change", () => {
+
+                if (this.#size <= limit) {
+                    unsubscribe();
+                    resolve();
+                }
+
+            });    
+        });
     }
 
     /**
      * Wait until all tasks are completed
-     * @returns {Promise<void>}
+     * @returns {Promise<any>}
      */
-    async waitUntilEmpty() {
-        while (this.size > 0) {
-            await sleep(50);
+    waitUntilEmpty() {
+
+        if (this.#size === 0) {
+            return Promise.resolve();
         }
+
+        return this.#eventEmitter.waitForEvent("empty");
     }
 }
 

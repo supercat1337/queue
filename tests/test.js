@@ -82,6 +82,8 @@ test("addTaskAndRun", async t => {
 
         let counter = 0; // initialize counter
 
+        await queue.waitUntilEmpty(); // test waitUntilEmpty when queue is empty
+
         while (counter < 10) { // loop until counter is 10
             counter++; // increment counter
 

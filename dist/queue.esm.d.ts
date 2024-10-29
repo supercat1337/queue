@@ -37,15 +37,14 @@ export class Queue {
     /**
      * Wait until the number of task id's in the queue is less than limit
      * @param {number} limit - sets the limit of the number of tasks in the queue
-     * @param {number} [wait_time=50] - sets the time to wait until the number of tasks in the queue is less than limit
      * @returns {Promise<void>}
      */
-    waitForLessThan(limit: number, wait_time?: number): Promise<void>;
+    waitForLessThan(limit: number): Promise<void>;
     /**
      * Wait until all tasks are completed
-     * @returns {Promise<void>}
+     * @returns {Promise<any>}
      */
-    waitUntilEmpty(): Promise<void>;
+    waitUntilEmpty(): Promise<any>;
     #private;
 }
 //# sourceMappingURL=queue.esm.d.ts.map

@@ -1,6 +1,6 @@
 {
   "name": "@supercat1337/queue",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Queue is a class that manages the tasks in the queue. It emits events when tasks are added or removed.",
   "main": "index.js",
   "scripts": {
@@ -22,13 +22,15 @@
   "type": "module",
   "moduleResolution": "nodenext",
   "keywords": [
-    "queue", "task", "task queue"
+    "queue",
+    "task",
+    "task queue"
   ],
   "publishConfig": {
     "registry": "https://registry.npmjs.org"
   },
   "homepage": "https://github.com/supercat1337/queue",
   "dependencies": {
-    "@supercat1337/event-emitter": "^1.0.6"
+    "@supercat1337/event-emitter": "^1.0.7"
   }
 }
