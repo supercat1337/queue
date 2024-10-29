@@ -62,7 +62,7 @@ await init(); // call init function
 
 ### Methods
 *   `addTaskAndRun(task)`: Add a task to the queue and run it. If the task resolves, it is removed from the queue. If the task rejects, the error is logged to the console and the task is removed from the queue.
-*   `waitForLessThan(limit, wait_time=50)`: Wait until the number of tasks in the queue is less than the specified limit.
+*   `waitForLessThan(limit)`: Wait until the number of tasks in the queue is less than the specified limit.
 *   `waitUntilEmpty()`: Wait until all tasks are completed.
 *   `add(...data)`: Add a task to the queue and return its task ID.
 *   `remove(taskId)`: Remove a task from the queue by its task ID.
